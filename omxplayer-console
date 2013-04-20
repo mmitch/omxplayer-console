@@ -13,6 +13,7 @@ my $win;
 my $dir;
 my @filelist;
 my $sel;
+my @dirstack;
 
 sub figlet($)
 {
@@ -168,12 +169,19 @@ while (1) {
 	    my $newdir = $dir;
 	    $newdir =~ s,/[^/]*$,,;
 	    change_directory($newdir);
+	    if (@dirstack) {
+		$sel = pop @dirstack;
+		if ($sel >= @filelist) {
+		    $sel = @filelist - 1;
+		}
+	    }
 	}
     }
     elsif ($cmd eq 'right') {
 	if ($sel >= 0) {
 	    my $file = $filelist[$sel];
 	    if ($file->{TYPE} eq 'd') {
+		push @dirstack, $sel;
 		change_directory($file->{FULLNAME});
 	    }
 	}
