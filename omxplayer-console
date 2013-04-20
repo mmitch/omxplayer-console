@@ -1,0 +1,190 @@
+#!/usr/bin/perl -w
+use strict;
+
+### use Curses;
+use IPC::Open2;
+use Term::ANSIColor;
+
+# configuration
+my $startdir = '/home/mitch/media';
+
+# global variables
+my $win;
+my $dir;
+my @filelist;
+my $sel;
+
+sub figlet($)
+{
+    my $text = shift;
+
+    my ($stdin, $stdout);
+    my $pid = open2(
+	$stdout,
+	$stdin,
+	'figlet -t -f small'
+	);
+
+    my $ret;
+
+    print $stdin "$text\n";
+    close $stdin;
+
+    local $/;
+    $ret .= <$stdout>;
+    close $stdout;
+
+    waitpid( $pid, 0 );
+
+    return $ret;
+}
+
+sub clear_screen()
+{
+    print `clear`;
+}
+
+sub show_dir()
+{
+    print color 'white';
+    print figlet($dir);
+    print color 'reset';
+}    
+
+sub show_file()
+{
+    if ($sel >= 0) {
+	my $file = $filelist[$sel];
+	if ($file->{TYPE} eq 'd') {
+	    print color 'bold white';
+	} else {
+	    print color 'bold blue';
+	}
+	print figlet($file->{NAME});
+	print color 'reset';
+    } else {
+	print figlet('');
+    }
+}    
+
+sub show_filelist()
+{
+    my $pos = 0;
+    foreach my $file (@filelist) {
+	printf("   %s %s\n",
+	      $pos == $sel ? colored('==>', 'bold red') : '   ',
+	      colored($file->{DISPLAY}, $file->{TYPE} eq 'f' ? 'bold blue' : 'bold white')
+	    );
+	
+	$pos++;
+    }
+}
+
+sub read_directory($)
+{
+    my $dir = shift;
+    my @files;
+
+    opendir DIR, $dir or die "can't opendir `$dir': $!";
+    while (my $file = readdir(DIR)) {
+	next if $file =~ /^\./;
+	my $fullname = $dir.'/'.$file;
+	if (-f $fullname) {
+	    push @files, {
+		TYPE => 'f',
+		NAME => $file,
+		FULLNAME => $fullname,
+		DIR => $dir,
+		DISPLAY => " $file "
+	    }
+	} elsif (-d _) {
+	    push @files, {
+		TYPE => 'd',
+		NAME => $file,
+		FULLNAME => $fullname,
+		DIR => $dir,
+		DISPLAY => "[$file]"
+	    }
+	}
+    }
+    closedir DIR or die "can't closedir `$dir': $!";
+
+    @files = sort { $a->{TYPE} cmp $b->{TYPE}
+		    ||
+			$a->{NAME} cmp $b->{NAME} } @files;
+
+    return @files;
+}
+
+sub change_directory($)
+{
+    my $newdir = shift;
+
+    if (substr($newdir, 0, length ($startdir)) eq $startdir) {
+	$dir = $newdir;
+	@filelist = read_directory($newdir);
+	$sel = @filelist ? 0 : -1;
+    }
+}
+
+sub draw_screen()
+{
+    clear_screen();
+    show_dir();
+    show_file();
+    show_filelist();
+}
+
+#### initialize curses
+###$win = new Curses();
+###cbreak();
+###noecho();
+
+# initialize other stuff
+change_directory($startdir);
+
+while (1) {
+    draw_screen();
+
+    my $cmd = <>;
+    chomp $cmd;
+    if ($cmd eq 'up') {
+	if ($sel > 0) {
+	    $sel--
+	}
+    }
+    elsif ($cmd eq 'down') {
+	if ($sel < @filelist-1) {
+	    $sel++
+	}
+    }
+    elsif ($cmd eq 'quit') {
+	last;
+    }
+    elsif ($cmd eq 'left') {
+	if (length $dir > length $startdir) {
+	    my $newdir = $dir;
+	    $newdir =~ s,/[^/]*$,,;
+	    change_directory($newdir);
+	}
+    }
+    elsif ($cmd eq 'right') {
+	if ($sel >= 0) {
+	    my $file = $filelist[$sel];
+	    if ($file->{TYPE} eq 'd') {
+		change_directory($file->{FULLNAME});
+	    }
+	}
+    }
+    elsif ($cmd eq 'power') {
+	`shutdown -h now`;
+    }
+
+}
+
+# exit
+print color 'reset';
+
+#### end curses
+###echo();
+###endwin();
