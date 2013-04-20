@@ -22,7 +22,9 @@ sub figlet($)
     my $pid = open2(
 	$stdout,
 	$stdin,
-	'figlet -t -f small'
+	'figlet -t -f mini -k'
+#	'figlet -t -f small -W'
+#	'figlet -t -f small'
 	);
 
     my $ret;
