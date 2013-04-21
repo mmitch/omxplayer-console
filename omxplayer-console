@@ -24,6 +24,8 @@ my @filelist;
 my $sel;
 my @dirstack;
 
+# cache clear screen sequence
+my $cls = `clear`;
 				  
 sub mplayer_stop()
 {
@@ -98,7 +100,7 @@ sub figlet($)
 
 sub clear_screen()
 {
-    print `clear`;
+    print $cls;
 }
 
 sub show_dir()
