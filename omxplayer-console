@@ -53,6 +53,10 @@ sub mplayer_start($)
     if ($mplayer_pid == 0) {
 	# child
 
+	close STDOUT;
+	close STDIN;
+	close STDERR;
+
 	my @exec = @mplayer_exec;
 	foreach my $part (@exec) {
 	    $part =~ s/%FILE%/$file/g;
