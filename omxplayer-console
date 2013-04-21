@@ -128,9 +128,12 @@ sub show_filelist()
 {
     my $pos = 0;
     foreach my $file (@filelist) {
+	my $filefg = $file->{TYPE} eq 'f' ? 'bold blue' : 'bold white';
+	my $filebg = $pos == $sel ? 'on_red' : '';
+	
 	printf("   %s %s\n",
 	      $pos == $sel ? colored('==>', 'bold red') : '   ',
-	      colored($file->{DISPLAY}, $file->{TYPE} eq 'f' ? 'bold blue' : 'bold white')
+	      colored($file->{DISPLAY}, "$filefg $filebg")
 	    );
 	
 	$pos++;
