@@ -9,9 +9,10 @@ use POSIX qw(mkfifo);
 # configuration
 my $startdir = '/home/mitch/media';
 
-my $mplayer_regexp = qr/\.(mp3|avi|mkv|ogg)$/;
+my $mplayer_regexp        = qr/\.(mp3|avi|mkv|ogg)$/;
+my $mplayer_regexp_stream = qr/\.(webradio)$/;
 my $mplayer_fifo = '/tmp/omxplayer-console.mplayer.fifo';
-my @mplayer_exec = ('mplayer', '-slave', '-quiet', '-input', "file=${mplayer_fifo}", '%FILE%');
+my @mplayer_exec = ('mplayer', '-slave', '-quiet', '-input', "file=${mplayer_fifo}", '%FILES%');
 my $mplayer_pid;
 # see mplayer slave mode documentation at
 # http://www.mplayerhq.hu/DOCS/tech/slave.txt
@@ -51,9 +52,14 @@ sub mplayer_send($)
 
 }
 
-sub mplayer_start($)
+sub stop_all()
 {
-    my $file = shift;
+    mplayer_stop();
+}
+
+sub mplayer_start(@)
+{
+    stop_all();
 
     $mplayer_pid = fork();
     die 'fork() unsuccessful in mplayer_start()' unless defined $mplayer_pid;
@@ -61,13 +67,18 @@ sub mplayer_start($)
     if ($mplayer_pid == 0) {
 	# child
 
-	close STDOUT;
+#	close STDOUT; # mplayer plays no streams when stdout is closed?!
+	open(STDOUT, '>', '/dev/null') or die "can't reopen stdout to `/dev/null': $!";
 	close STDIN;
 	close STDERR;
 
-	my @exec = @mplayer_exec;
-	foreach my $part (@exec) {
-	    $part =~ s/%FILE%/$file/g;
+	my @exec = ();
+	foreach my $part (@mplayer_exec) {
+	    if ($part eq '%FILES%') {
+		push @exec, @_;
+	    } else {
+		push @exec, $part;
+	    }
 	}
 
 	exec(@exec);
@@ -75,6 +86,33 @@ sub mplayer_start($)
 	die 'exec() did not happen in mplayer_start()';
 	
     }
+}
+
+sub mplayer_start_stream($)
+{
+    my $playlist = shift;
+
+    open PLAYLIST, '<', $playlist or die "can't open `$playlist': $!";
+    my $line = <PLAYLIST>;
+    close PLAYLIST or die "can't close `$playlist': $!";
+
+    chomp $line;
+
+    # this is taken from jamirdochegal:
+    if ($line =~ /^(?:\s*(\S+)\|)?(.*)\s+(\S+)\s*$/) {
+        my ($shortcut, $name, $url, $flags) = ($1, $2, $3, {});
+
+        while ($url =~ s/^([A-Z]+)://g) {
+            $flags->{$1}++;
+        }
+
+	my @parms = ( '-cache', '128' );
+	push @parms, ('-demuxer', 'ogg') if exists $flags->{OGGDEMUX};
+	push @parms, '-playlist' unless exists $flags->{DIRECT};
+
+	mplayer_start( @parms, $url );
+    }
+
 }
 
 sub print_big($)
@@ -155,7 +193,7 @@ sub show_filelist()
     }
 
     if ($start > 0) {
-	print colored('       -^-^-^-^-^-^-^-^-' . "$start / $end", 'bold yellow') . "\n";
+	print colored('       -^-^-^-^-^-^-^-^-', 'bold yellow') . "\n";
     } else {
 	print "\n";
     }
@@ -180,7 +218,7 @@ sub show_filelist()
     }
 
     if ($end < @filelist) {
-	print colored('       -v-v-v-v-v-v-v-v-' . "$start / $end", 'bold yellow') . "\n";
+	print colored('       -v-v-v-v-v-v-v-v-', 'bold yellow') . "\n";
     } else {
 	print "\n";
     }
@@ -267,6 +305,7 @@ while (1) {
 	}
     }
     elsif ($cmd eq 'quit') {
+	stop_all();
 	last;
     }
     elsif ($cmd eq 'left') {
@@ -299,8 +338,10 @@ while (1) {
 	    my $file = $filelist[$sel];
 	    if ($file->{TYPE} eq 'f') {
 		if ($file->{NAME} =~ /$mplayer_regexp/) {
-		    mplayer_stop();
 		    mplayer_start($file->{FULLNAME});
+		}
+		elsif ($file->{NAME} =~ /$mplayer_regexp_stream/) {
+		    mplayer_start_stream($file->{FULLNAME});
 		}
 	    }
 	}
