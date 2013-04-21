@@ -23,9 +23,15 @@ my $dir;
 my @filelist;
 my $sel;
 my @dirstack;
+my $ypos;
 
 # cache clear screen sequence
 my $cls = `clear`;
+
+# do this once, console terminals don't resize often
+my $screen_w = 0 + `tput cols`;
+my $screen_h = 0 + `tput lines`;
+
 				  
 sub mplayer_stop()
 {
@@ -71,7 +77,7 @@ sub mplayer_start($)
     }
 }
 
-sub figlet($)
+sub print_big($)
 {
     my $text = shift;
 
@@ -89,8 +95,10 @@ sub figlet($)
     print $stdin "$text\n";
     close $stdin;
 
-    local $/;
-    $ret .= <$stdout>;
+    while (my $line = <$stdout>) {
+	$ypos++;
+	print $line;
+    }
     close $stdout;
 
     waitpid( $pid, 0 );
@@ -101,12 +109,13 @@ sub figlet($)
 sub clear_screen()
 {
     print $cls;
+    $ypos = 1; # don't use last line on screen
 }
 
 sub show_dir()
 {
     print color 'white';
-    print figlet($dir);
+    print_big($dir);
     print color 'reset';
 }    
 
@@ -119,26 +128,61 @@ sub show_file()
 	} else {
 	    print color 'bold blue';
 	}
-	print figlet($file->{NAME});
+	print_big($file->{NAME});
 	print color 'reset';
     } else {
-	print figlet('');
+	print_big('');
     }
 }    
 
 sub show_filelist()
 {
+
+    my $start = 0;
+    my $end = @filelist;
+
+    my $lines_left = $screen_h - $ypos - 2;
+    if ($lines_left < @filelist) {
+	$start = $sel - int($lines_left/2);
+	if ($start < 0) {
+	    $start = 0;
+	}
+	$end = $start + $lines_left;
+	if ($end > @filelist) {
+	    $end = @filelist;
+	    $start = $end - $lines_left;
+	}
+    }
+
+    if ($start > 0) {
+	print colored('       -^-^-^-^-^-^-^-^-' . "$start / $end", 'bold yellow') . "\n";
+    } else {
+	print "\n";
+    }
+	    
     my $pos = 0;
     foreach my $file (@filelist) {
-	my $filefg = $file->{TYPE} eq 'f' ? 'bold blue' : 'bold white';
-	my $filebg = $pos == $sel ? 'on_red' : '';
+
+	unless ($pos < $start) {
+
+	    my $filefg = $file->{TYPE} eq 'f' ? 'bold blue' : 'bold white';
+	    my $filebg = $pos == $sel ? 'on_red' : '';
 	
-	printf("   %s %s\n",
-	      $pos == $sel ? colored('==>', 'bold red') : '   ',
-	      colored($file->{DISPLAY}, "$filefg $filebg")
-	    );
-	
+	    printf("   %s %s\n",
+		   $pos == $sel ? colored('==>', 'bold yellow') : '   ',
+		   colored($file->{DISPLAY}, "$filefg $filebg")
+		);
+	}	
+
 	$pos++;
+
+	last if $pos == $end;
+    }
+
+    if ($end < @filelist) {
+	print colored('       -v-v-v-v-v-v-v-v-' . "$start / $end", 'bold yellow') . "\n";
+    } else {
+	print "\n";
     }
 }
 
