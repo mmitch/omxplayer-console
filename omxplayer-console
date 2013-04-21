@@ -294,12 +294,12 @@ while (1) {
 
     my $cmd = <>;
     chomp $cmd;
-    if ($cmd eq 'up') {
+    if ($cmd eq 'up' or $cmd eq ' ') {
 	if ($sel > 0) {
 	    $sel--
 	}
     }
-    elsif ($cmd eq 'down') {
+    elsif ($cmd eq 'down' or $cmd eq '') {
 	if ($sel < @filelist-1) {
 	    $sel++
 	}
