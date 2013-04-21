@@ -9,7 +9,7 @@ use POSIX qw(mkfifo);
 # configuration
 my $startdir = '/home/mitch/media';
 
-my $mplayer_regexp = qr/\.(mp3|avi|mkv)$/;
+my $mplayer_regexp = qr/\.(mp3|avi|mkv|ogg)$/;
 my $mplayer_fifo = '/tmp/omxplayer-console.mplayer.fifo';
 my @mplayer_exec = ('mplayer', '-slave', '-quiet', '-input', "file=${mplayer_fifo}", '%FILE%');
 my $mplayer_pid;
