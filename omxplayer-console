@@ -4,9 +4,18 @@ use strict;
 ### use Curses;
 use IPC::Open2;
 use Term::ANSIColor;
+use POSIX qw(mkfifo);
 
 # configuration
 my $startdir = '/home/mitch/media';
+
+my $mplayer_regexp = qr/\.(mp3|avi|mkv)$/;
+my $mplayer_fifo = '/tmp/omxplayer-console.mplayer.fifo';
+my @mplayer_exec = ('mplayer', '-slave', '-quiet', '-input', "file=${mplayer_fifo}", '%FILE%');
+my $mplayer_pid;
+# see mplayer slave mode documentation at
+# http://www.mplayerhq.hu/DOCS/tech/slave.txt
+
 
 # global variables
 my $win;
@@ -14,6 +23,47 @@ my $dir;
 my @filelist;
 my $sel;
 my @dirstack;
+
+				  
+sub mplayer_stop()
+{
+    return unless defined $mplayer_pid;
+
+    mplayer_send('stop');
+    kill 15, $mplayer_pid;
+    waitpid( $mplayer_pid, 0 );
+    $mplayer_pid = undef;
+}
+
+sub mplayer_send($)
+{
+    open  FIFO, '>', $mplayer_fifo or die "can't open fifo `$mplayer_fifo': $!";
+    print FIFO "$_[0]\n";
+    close FIFO or die "can't close fifo `$mplayer_fifo': $!";
+
+}
+
+sub mplayer_start($)
+{
+    my $file = shift;
+
+    $mplayer_pid = fork();
+    die 'fork() unsuccessful in mplayer_start()' unless defined $mplayer_pid;
+
+    if ($mplayer_pid == 0) {
+	# child
+
+	my @exec = @mplayer_exec;
+	foreach my $part (@exec) {
+	    $part =~ s/%FILE%/$file/g;
+	}
+
+	exec(@exec);
+	# gone, we are mplayer now
+	die 'exec() did not happen in mplayer_start()';
+	
+    }
+}
 
 sub figlet($)
 {
@@ -144,7 +194,9 @@ sub draw_screen()
 ###noecho();
 
 # initialize other stuff
+(-p $mplayer_fifo) or mkfifo($mplayer_fifo, 0700) or die "can't mkfifo `$mplayer_fifo': $!";
 change_directory($startdir);
+
 
 while (1) {
     draw_screen();
@@ -188,6 +240,21 @@ while (1) {
     }
     elsif ($cmd eq 'power') {
 	`shutdown -h now`;
+    }
+    elsif ($cmd eq 'play') {
+	if ($sel >= 0) {
+	    my $file = $filelist[$sel];
+	    if ($file->{TYPE} eq 'f') {
+		if ($file->{NAME} =~ /$mplayer_regexp/) {
+		    mplayer_stop();
+		    mplayer_start($file->{FULLNAME});
+		}
+	    }
+	}
+	
+    }
+    elsif ($cmd eq 'stop') {
+	mplayer_stop();
     }
 
 }
