@@ -6,7 +6,7 @@ use Term::ANSIColor;
 use POSIX qw(mkfifo);
 
 # configuration
-my $startdir = '/home/mitch/media';
+my $startdir = "$ENV{HOME}/media";
 
 my $mplayer_regexp        = qr/\.(mp3|avi|mkv|ogg)$/;
 my $mplayer_regexp_stream = qr/\.(webradio)$/;
