@@ -8,6 +8,13 @@ use POSIX qw(mkfifo);
 # configuration
 my $startdir = "$ENV{HOME}/media";
 
+my $omxplayer_regexp = qr/\.(264|avi|bin|divx|f4v|h264|m4e|m4v|m4a|mkv|mov|mp4|mp4v|mpe|mpeg|mpeg4|mpg|mpg2|mpv|mpv2|mqv|mvp|ogm|ogv|qt|qtm|rm|rts|scm|scn|smk|swf|vob|wmv|xvid|x264|mp3|flac|ogg|wav|flv|mkv)$/;
+my $omxplayer_fifo = '/tmp/omxplayer-console.omxplayer.fifo';
+my @omxplayer_exec = ('omxplayer', '-o', 'hdmi', '%FILES%');
+my $omxplayer_pid;
+# omxplayer hotkeys at
+# http://elinux.org/Omxplayer
+
 my $mplayer_regexp        = qr/\.(mp3|avi|mkv|ogg)$/;
 my $mplayer_regexp_stream = qr/\.(webradio)$/;
 my $mplayer_fifo = '/tmp/omxplayer-console.mplayer.fifo';
@@ -43,17 +50,80 @@ sub mplayer_stop()
     $mplayer_pid = undef;
 }
 
+sub omxplayer_stop()
+{
+    return unless defined $omxplayer_pid;
+
+    omxplayer_send('q');
+    kill 15, $omxplayer_pid;
+    waitpid( $omxplayer_pid, 0 );
+    $omxplayer_pid = undef;
+}
+
 sub mplayer_send($)
 {
+    return unless defined $mplayer_pid;
+    if ( kill(0, $mplayer_pid) == 0) {
+	$mplayer_pid = 0;
+	return;
+    };
+
     open  FIFO, '>', $mplayer_fifo or die "can't open fifo `$mplayer_fifo': $!";
     print FIFO "$_[0]\n";
     close FIFO or die "can't close fifo `$mplayer_fifo': $!";
 
 }
 
+sub omxplayer_send($)
+{
+    return unless defined $omxplayer_pid;
+    if ( kill(0, $omxplayer_pid) == 0) {
+	$omxplayer_pid = 0;
+	return;
+    };
+
+    open  FIFO, '>', $omxplayer_fifo or die "can't open fifo `$omxplayer_fifo': $!";
+    print FIFO "$_[0]";
+    close FIFO or die "can't close fifo `$omxplayer_fifo': $!";
+
+}
+
 sub stop_all()
 {
     mplayer_stop();
+    omxplayer_stop();
+}
+
+sub omxplayer_start(@)
+{
+    stop_all();
+
+    $omxplayer_pid = fork();
+    die 'fork() unsuccessful in omxplayer_start()' unless defined $omxplayer_pid;
+
+    if ($omxplayer_pid == 0) {
+	# child
+
+	open(STDIN, '<', $omxplayer_fifo) or die "can't reopen stdin from `$omxplayer_fifo': $!";
+	close STDOUT;
+	close STDERR;
+
+	my @exec = ();
+	foreach my $part (@omxplayer_exec) {
+	    if ($part eq '%FILES%') {
+		push @exec, @_;
+	    } else {
+		push @exec, $part;
+	    }
+	}
+
+	exec(@exec);
+	# gone, we are omxplayer now
+	die 'exec() did not happen in omxplayer_start()';
+	
+    } else {
+	omxplayer_send('.');
+    }
 }
 
 sub mplayer_start(@)
@@ -66,9 +136,9 @@ sub mplayer_start(@)
     if ($mplayer_pid == 0) {
 	# child
 
+	close STDIN;
 #	close STDOUT; # mplayer plays no streams when stdout is closed?!
 	open(STDOUT, '>', '/dev/null') or die "can't reopen stdout to `/dev/null': $!";
-	close STDIN;
 	close STDERR;
 
 	my @exec = ();
@@ -279,6 +349,7 @@ sub draw_screen()
 }
 
 # initialize other stuff
+(-p $omxplayer_fifo) or mkfifo($omxplayer_fifo, 0700) or die "can't mkfifo `$omxplayer_fifo': $!";
 (-p $mplayer_fifo) or mkfifo($mplayer_fifo, 0700) or die "can't mkfifo `$mplayer_fifo': $!";
 change_directory($startdir);
 
@@ -331,6 +402,9 @@ while (1) {
 	if ($sel >= 0) {
 	    my $file = $filelist[$sel];
 	    if ($file->{TYPE} eq 'f') {
+		if ($file->{NAME} =~ /$omxplayer_regexp/) {
+		    omxplayer_start($file->{FULLNAME});
+		}
 		if ($file->{NAME} =~ /$mplayer_regexp/) {
 		    mplayer_start($file->{FULLNAME});
 		}
@@ -342,6 +416,7 @@ while (1) {
 	
     }
     elsif ($cmd eq 'stop') {
+	omxplayer_stop();
 	mplayer_stop();
     }
 
