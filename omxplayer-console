@@ -11,7 +11,7 @@ my $startdir = "$ENV{HOME}/media";
 my $omxplayer_regexp = qr/\.(264|avi|bin|divx|f4v|h264|m4e|m4v|m4a|mkv|mov|mp4|mp4v|mpe|mpeg|mpeg4|mpg|mpg2|mpv|mpv2|mqv|mvp|ogm|ogv|qt|qtm|rm|rts|scm|scn|smk|swf|vob|wmv|xvid|x264|mp3|flac|ogg|wav|flv|mkv)$/;
 my $omxplayer_fifo = '/tmp/omxplayer-console.omxplayer.fifo';
 my @omxplayer_exec = ('omxplayer', '-o', 'hdmi', '%FILES%');
-my $omxplayer_pid;
+my $omxplayer_kill = 'killall -e omxplayer.bin';
 # omxplayer hotkeys at
 # http://elinux.org/Omxplayer
 
@@ -19,7 +19,6 @@ my $mplayer_regexp        = qr/\.(mp3|avi|mkv|ogg)$/;
 my $mplayer_regexp_stream = qr/\.(webradio)$/;
 my $mplayer_fifo = '/tmp/omxplayer-console.mplayer.fifo';
 my @mplayer_exec = ('mplayer', '-slave', '-quiet', '-input', "file=${mplayer_fifo}", '%FILES%');
-my $mplayer_pid;
 # see mplayer slave mode documentation at
 # http://www.mplayerhq.hu/DOCS/tech/slave.txt
 
@@ -32,6 +31,9 @@ my $sel;
 my @dirstack;
 my $ypos;
 
+my $omxplayer_active = 0;
+my $mplayer_pid = 0;
+
 # cache clear screen sequence
 my $cls = `clear`;
 
@@ -39,10 +41,24 @@ my $cls = `clear`;
 my $screen_w = 0 + `tput cols`;
 my $screen_h = 0 + `tput lines`;
 
+# handle forks in *player_send()
+use POSIX ":sys_wait_h";
+sub REAPER {
+    my $child;
+    # If a second child dies while in the signal handler caused by the
+    # first death, we won't get another signal. So must loop here else
+    # we will leave the unreaped child as a zombie. And the next time
+    # two children die we get another zombie. And so on.
+    while (($child = waitpid(-1,WNOHANG)) > 0) {
+    }
+    $SIG{CHLD} = \&REAPER;  # still loathe SysV
+}
+$SIG{CHLD} = \&REAPER;
+
 				  
 sub mplayer_stop()
 {
-    return unless defined $mplayer_pid;
+    return unless $mplayer_pid;
 
     mplayer_send('stop');
     kill 15, $mplayer_pid;
@@ -52,40 +68,44 @@ sub mplayer_stop()
 
 sub omxplayer_stop()
 {
-    return unless defined $omxplayer_pid;
-
+    return unless $omxplayer_active;
     omxplayer_send('q');
-    kill 15, $omxplayer_pid;
-    waitpid( $omxplayer_pid, 0 );
-    $omxplayer_pid = undef;
+    `${omxplayer_kill}`;
+    $omxplayer_active = 0;
 }
 
 sub mplayer_send($)
 {
-    return unless defined $mplayer_pid;
+    return unless $mplayer_pid;
     if ( kill(0, $mplayer_pid) == 0) {
-	$mplayer_pid = 0;
+	$mplayer_pid = undef;
 	return;
     };
 
-    open  FIFO, '>', $mplayer_fifo or die "can't open fifo `$mplayer_fifo': $!";
-    print FIFO "$_[0]\n";
-    close FIFO or die "can't close fifo `$mplayer_fifo': $!";
-
+    my $child = fork();
+    die 'fork() unsuccessful in mplayer_send()' unless defined $child;
+    if ($child == 0) {
+	# child
+	open  FIFO, '>', $mplayer_fifo or die "can't open fifo `$mplayer_fifo': $!";
+	print FIFO "$_[0]\n";
+	close FIFO or die "can't close fifo `$mplayer_fifo': $!";
+	exit 0;
+    }
 }
 
 sub omxplayer_send($)
 {
-    return unless defined $omxplayer_pid;
-    if ( kill(0, $omxplayer_pid) == 0) {
-	$omxplayer_pid = 0;
-	return;
-    };
+    return unless $omxplayer_active;
 
-    open  FIFO, '>', $omxplayer_fifo or die "can't open fifo `$omxplayer_fifo': $!";
-    print FIFO "$_[0]";
-    close FIFO or die "can't close fifo `$omxplayer_fifo': $!";
-
+    my $child = fork();
+    die 'fork() unsuccessful in omxplayer_send()' unless defined $child;
+    if ($child == 0) {
+	# child
+	open  FIFO, '>', $omxplayer_fifo or die "can't open fifo `$omxplayer_fifo': $!";
+	print FIFO "$_[0]";
+	close FIFO or die "can't close fifo `$omxplayer_fifo': $!";
+	exit 0;
+    }
 }
 
 sub stop_all()
@@ -98,7 +118,8 @@ sub omxplayer_start(@)
 {
     stop_all();
 
-    $omxplayer_pid = fork();
+
+    my $omxplayer_pid = fork();
     die 'fork() unsuccessful in omxplayer_start()' unless defined $omxplayer_pid;
 
     if ($omxplayer_pid == 0) {
@@ -122,6 +143,7 @@ sub omxplayer_start(@)
 	die 'exec() did not happen in omxplayer_start()';
 	
     } else {
+	$omxplayer_active = 1;
 	omxplayer_send('.');
     }
 }
@@ -405,7 +427,7 @@ while (1) {
 		if ($file->{NAME} =~ /$omxplayer_regexp/) {
 		    omxplayer_start($file->{FULLNAME});
 		}
-		if ($file->{NAME} =~ /$mplayer_regexp/) {
+		elsif ($file->{NAME} =~ /$mplayer_regexp/) {
 		    mplayer_start($file->{FULLNAME});
 		}
 		elsif ($file->{NAME} =~ /$mplayer_regexp_stream/) {
