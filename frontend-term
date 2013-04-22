@@ -1,0 +1,73 @@
+#!/usr/bin/perl -w
+use strict;
+use Term::ReadKey;
+
+
+# set this to true to show unknown key sequences
+my $learning_mode = 1;
+
+#################################
+
+my %escapes = (
+    'A' => 'up',
+    'B' => 'down',
+    'C' => 'right',
+    'D' => 'left',
+    );
+
+my %keys = (
+    'q' => 'quit',
+    "\n" => 'play',
+    ' ' => 'stop',
+    );
+
+#################################
+
+ReadMode 'cbreak';
+
+my $esc = chr(27);
+my $seq = '';
+
+$|++;
+
+while (1) {
+
+    my $key = ReadKey(-1);
+    next unless defined $key;
+	
+    # build ESC sequences
+    if ($seq eq '' and $key eq $esc) {
+	$seq = $key;
+    }
+    elsif ($seq eq $esc and $key eq '[') {
+	$seq .= $key;
+    }
+    # parse ESC sequences
+    elsif ($seq eq $esc.'[') {
+	$seq = '';
+	if (exists $escapes{$key}) {
+	    print "$escapes{$key}\n";
+	} elsif ($learning_mode) {
+	    printf "ESC[ %03d=(%s)\n", ord($key), $key ;
+	}
+    }
+    # normal characters, reset sequence
+    else {
+	$seq = '';
+	
+	if (exists $keys{$key}) {
+	    print "$keys{$key}\n";
+	} elsif ($learning_mode) {
+	    printf "%03d=(%s)\n", ord($key), $key;
+	}
+    
+	# this has to be treated special -> loop end
+	if ($key eq 'q') {
+	    last;
+	}
+    }
+
+}
+
+ReadMode 'restore';
+

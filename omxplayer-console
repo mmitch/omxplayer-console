@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-### use Curses;
 use IPC::Open2;
 use Term::ANSIColor;
 use POSIX qw(mkfifo);
@@ -279,11 +278,6 @@ sub draw_screen()
     show_filelist();
 }
 
-#### initialize curses
-###$win = new Curses();
-###cbreak();
-###noecho();
-
 # initialize other stuff
 (-p $mplayer_fifo) or mkfifo($mplayer_fifo, 0700) or die "can't mkfifo `$mplayer_fifo': $!";
 change_directory($startdir);
@@ -294,12 +288,12 @@ while (1) {
 
     my $cmd = <>;
     chomp $cmd;
-    if ($cmd eq 'up' or $cmd eq ' ') {
+    if ($cmd eq 'up') {
 	if ($sel > 0) {
 	    $sel--
 	}
     }
-    elsif ($cmd eq 'down' or $cmd eq '') {
+    elsif ($cmd eq 'down') {
 	if ($sel < @filelist-1) {
 	    $sel++
 	}
@@ -356,6 +350,3 @@ while (1) {
 # exit
 print color 'reset';
 
-#### end curses
-###echo();
-###endwin();
