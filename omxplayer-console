@@ -4,6 +4,7 @@ use strict;
 use IPC::Open2;
 use Term::ANSIColor;
 use POSIX qw(mkfifo);
+use File::Which;
 
 # configuration
 my $startdir = "$ENV{HOME}/media";
@@ -370,9 +371,22 @@ sub draw_screen()
     show_filelist();
 }
 
-# initialize other stuff
-(-p $omxplayer_fifo) or mkfifo($omxplayer_fifo, 0700) or die "can't mkfifo `$omxplayer_fifo': $!";
-(-p $mplayer_fifo) or mkfifo($mplayer_fifo, 0700) or die "can't mkfifo `$mplayer_fifo': $!";
+#### initialize other stuff
+
+# check for binaries and initialize FIFOs
+if (defined which('omxplayer') and defined which('omxplayer.bin')) {
+    (-p $omxplayer_fifo) or mkfifo($omxplayer_fifo, 0700) or die "can't mkfifo `$omxplayer_fifo': $!";
+} else {
+    $omxplayer_regexp = undef;
+}
+if (defined which('mplayer')) {
+    (-p $mplayer_fifo) or mkfifo($mplayer_fifo, 0700) or die "can't mkfifo `$mplayer_fifo': $!";
+} else {
+    $mplayer_regexp = undef;
+    $mplayer_regexp_stream = undef;
+}
+
+# startup
 change_directory($startdir);
 
 
@@ -424,13 +438,13 @@ while (1) {
 	if ($sel >= 0) {
 	    my $file = $filelist[$sel];
 	    if ($file->{TYPE} eq 'f') {
-		if ($file->{NAME} =~ /$omxplayer_regexp/) {
+		if (defined $omxplayer_regexp and $file->{NAME} =~ /$omxplayer_regexp/) {
 		    omxplayer_start($file->{FULLNAME});
 		}
-		elsif ($file->{NAME} =~ /$mplayer_regexp/) {
+		elsif (defined $mplayer_regexp and $file->{NAME} =~ /$mplayer_regexp/) {
 		    mplayer_start($file->{FULLNAME});
 		}
-		elsif ($file->{NAME} =~ /$mplayer_regexp_stream/) {
+		elsif (defined $mplayer_regexp_stream and $file->{NAME} =~ /$mplayer_regexp_stream/) {
 		    mplayer_start_stream($file->{FULLNAME});
 		}
 	    }
