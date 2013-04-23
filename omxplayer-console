@@ -31,6 +31,7 @@ my @filelist;
 my $sel;
 my @dirstack;
 my $ypos;
+my $visible = 1;
 
 my $omxplayer_active = 0;
 my $mplayer_pid = 0;
@@ -57,6 +58,12 @@ sub REAPER {
 $SIG{CHLD} = \&REAPER;
 
 				  
+sub clear_screen()
+{
+    print $cls;
+    $ypos = 1; # don't use last line on screen
+}
+
 sub mplayer_stop()
 {
     return unless $mplayer_pid;
@@ -113,12 +120,15 @@ sub stop_all()
 {
     mplayer_stop();
     omxplayer_stop();
+    $visible = 1;
 }
 
 sub omxplayer_start(@)
 {
     stop_all();
 
+    $visible = 0;
+    clear_screen();
 
     my $omxplayer_pid = fork();
     die 'fork() unsuccessful in omxplayer_start()' unless defined $omxplayer_pid;
@@ -143,15 +153,19 @@ sub omxplayer_start(@)
 	# gone, we are omxplayer now
 	die 'exec() did not happen in omxplayer_start()';
 	
-    } else {
-	$omxplayer_active = 1;
-	omxplayer_send('.');
-    }
+    } 
+
+    $omxplayer_active = 1;
+    omxplayer_send('.');
+
 }
 
 sub mplayer_start(@)
 {
     stop_all();
+
+    $visible = 0;
+    clear_screen();
 
     $mplayer_pid = fork();
     die 'fork() unsuccessful in mplayer_start()' unless defined $mplayer_pid;
@@ -178,6 +192,7 @@ sub mplayer_start(@)
 	die 'exec() did not happen in mplayer_start()';
 	
     }
+
 }
 
 sub mplayer_start_stream($)
@@ -203,6 +218,7 @@ sub mplayer_start_stream($)
 	push @parms, '-playlist' unless exists $flags->{DIRECT};
 
 	mplayer_start( @parms, $url );
+	$visible = 1;
     }
 
 }
@@ -234,12 +250,6 @@ sub print_big($)
     waitpid( $pid, 0 );
 
     return $ret;
-}
-
-sub clear_screen()
-{
-    print $cls;
-    $ypos = 1; # don't use last line on screen
 }
 
 sub show_dir()
@@ -366,9 +376,11 @@ sub change_directory($)
 sub draw_screen()
 {
     clear_screen();
-    show_dir();
-    show_file();
-    show_filelist();
+    if ($visible) {
+	show_dir();
+	show_file();
+	show_filelist();
+    }
 }
 
 #### initialize other stuff
@@ -459,8 +471,7 @@ while (1) {
 	
     }
     elsif ($cmd eq 'stop') {
-	omxplayer_stop();
-	mplayer_stop();
+	stop_all();
     }
 
 }
