@@ -386,6 +386,11 @@ if (defined which('mplayer')) {
     $mplayer_regexp_stream = undef;
 }
 
+# parse commandline arguments
+if (defined @ARGV[0]) {
+    $startdir = @ARGV[0];
+}
+
 # startup
 change_directory($startdir);
 

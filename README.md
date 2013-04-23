@@ -12,6 +12,15 @@ dependencies
 - omxplayer (optional)
 - mplayer (optional)
 
+omxplayer-console usage
+-----------------------
+
+```
+omxplayer-console [<start_directory>]
+```
+
+If `<start_directory>` is not given, `$HOME/media` is used as the initial directory.
+
 omxplayer-console commands
 --------------------------
 
@@ -27,6 +36,16 @@ meaning is given in {curly braces}.  These commands are supported:
 * seek+ -> seek forward {number of seconds to skip}
 * seek- -> seek backward {number of seconds to skip}
 * quit -> quit omxplayer-console
+
+frontend-term usage
+-------------------
+
+```
+frontend-term
+```
+
+Currently, frontend-term uses no arguments.
+
 
 frontend-term keybindings
 -------------------------
