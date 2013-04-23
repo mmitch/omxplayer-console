@@ -7,6 +7,7 @@ dependencies
 ------------
 
 - Perl
+- File::Which
 - figlet
 - omxplayer (optional)
 - mplayer (optional)
