@@ -64,7 +64,7 @@ sub mplayer_stop()
     mplayer_send('stop');
     kill 15, $mplayer_pid;
     waitpid( $mplayer_pid, 0 );
-    $mplayer_pid = undef;
+    $mplayer_pid = 0;
 }
 
 sub omxplayer_stop()
@@ -79,7 +79,7 @@ sub mplayer_send($)
 {
     return unless $mplayer_pid;
     if ( kill(0, $mplayer_pid) == 0) {
-	$mplayer_pid = undef;
+	$mplayer_pid = 0;
 	return;
     };
 
