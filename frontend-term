@@ -4,7 +4,7 @@ use Term::ReadKey;
 
 
 # set this to true to show unknown key sequences
-my $learning_mode = 1;
+my $learning_mode = 0;
 
 #################################
 
