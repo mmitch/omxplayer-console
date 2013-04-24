@@ -37,6 +37,8 @@ meaning is given in {curly braces}.  These commands are supported:
 * seek- -> seek backward {number of seconds to skip}
 * quit -> quit omxplayer-console
 
+note: omxplayer can only seek +/-30 and +/-600 seconds :-/
+
 frontend-term usage
 -------------------
 
