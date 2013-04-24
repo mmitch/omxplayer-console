@@ -406,22 +406,32 @@ if (defined $ARGV[0]) {
 # startup
 change_directory($startdir);
 
-
+### TODO:
+### put commands in a hash
+### give default values for $arg
 while (1) {
     draw_screen();
 
-    my $cmd = <>;
-    next unless defined $cmd;
+    my $input = <>;
+    next unless defined $input;
 
-    chomp $cmd;
+    chomp $input;
+
+    next unless $input =~ m/^(.*?)\s*([-0-9]*)$/;
+    my ($cmd, $arg) = ($1, $2);
+
     if ($cmd eq 'up') {
-	if ($sel > 0) {
-	    $sel--
+	$arg = 1 unless $arg;
+	$sel -= $arg;
+	if ($sel < 0) {
+	    $sel = 0;
 	}
     }
     elsif ($cmd eq 'down') {
-	if ($sel < @filelist-1) {
-	    $sel++
+	$arg = 1 unless $arg;
+	$sel += $arg;
+	if ($sel >= @filelist) {
+	    $sel = @filelist - 1;
 	}
     }
     elsif ($cmd eq 'quit') {
