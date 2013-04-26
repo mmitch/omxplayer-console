@@ -477,9 +477,6 @@ while (1) {
 	}
 	
     }
-    elsif ($cmd eq 'power') {
-	`shutdown -h now`;
-    }
     elsif ($cmd eq 'play') {
 	if ($sel >= 0) {
 	    my $file = $filelist[$sel];
