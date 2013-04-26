@@ -292,7 +292,7 @@ sub show_file()
 	if ($file->{TYPE} eq 'd') {
 	    print color 'bold white';
 	} else {
-	    print color 'bold blue';
+	    print color 'bold green';
 	}
 	print_big($file->{NAME});
 	print color 'reset';
@@ -331,7 +331,7 @@ sub show_filelist()
 
 	unless ($pos < $start) {
 
-	    my $filefg = $file->{TYPE} eq 'f' ? 'bold blue' : 'bold white';
+	    my $filefg = $file->{TYPE} eq 'f' ? 'bold green' : 'bold white';
 	    my $filebg = $pos == $sel ? 'on_red' : '';
 	
 	    printf("   %s %s\n",
@@ -410,7 +410,7 @@ sub show_statusbar()
 		$min,
 		get_ip_cached()
 	),
-	'red') . "\n";
+	'cyan') . "\n";
 
     $ypos++;
 }
