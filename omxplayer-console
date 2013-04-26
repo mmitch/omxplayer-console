@@ -257,7 +257,8 @@ sub print_big($)
     my $pid = open2(
 	$stdout,
 	$stdin,
-	'figlet -t -f mini -k'
+        "figlet -w $screen_w -f mini -k"
+#	'figlet -t -f mini -k'
 #	'figlet -t -f small -W'
 #	'figlet -t -f small'
 	);
