@@ -39,6 +39,10 @@ my $mplayer_pid = 0;
 # cache clear screen sequence
 my $cls = `clear`;
 
+# cache IP address
+my $ip_cache = '';
+my $ip_cache_time = 0;
+
 # do this once, console terminals don't resize often
 my $screen_w = 0 + `tput cols`;
 my $screen_h = 0 + `tput lines`;
@@ -57,7 +61,29 @@ sub REAPER {
 }
 $SIG{CHLD} = \&REAPER;
 
-				  
+sub get_ip_real()
+{				  
+    my $ip = '';
+    open IP, 'ip addr |' or return $ip;
+    while (my $line = <IP>) {
+	if ($line =~ m,inet ([.0-9]+)/,) {
+	    $ip = $1;
+	}
+    }
+    close IP;
+    return $ip;
+}
+
+sub get_ip_cached()
+{
+    # 5 minute cache
+    if (time() - $ip_cache_time > 300) {
+	$ip_cache_time = time();
+	$ip_cache = get_ip_real();
+    }
+    return $ip_cache;
+}
+
 sub clear_screen()
 {
     print $cls;
@@ -373,10 +399,27 @@ sub change_directory($)
     }
 }
 
+sub show_statusbar()
+{
+
+    my (undef, $min, $hour, undef) = localtime(time);
+
+    print colored(
+	sprintf("%02d:%02d - raspberry pi videostation - %s ",
+		$hour,
+		$min,
+		get_ip_cached()
+	),
+	'red') . "\n";
+
+    $ypos++;
+}
+
 sub draw_screen()
 {
     clear_screen();
     if ($visible) {
+	show_statusbar();
 	show_dir();
 	show_file();
 	show_filelist();

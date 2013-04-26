@@ -11,6 +11,7 @@ dependencies
 - figlet
 - omxplayer (optional)
 - mplayer (optional)
+- ip (optional)
 
 omxplayer-console usage
 -----------------------
