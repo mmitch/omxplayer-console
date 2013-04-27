@@ -34,6 +34,7 @@ meaning is given in {curly braces}.  These commands are supported:
 * left -> enter parent folder
 * play -> play selected file
 * stop -> stop playback
+* pause -> pause/resume
 * seek+ -> seek forward {number of seconds to skip}
 * seek- -> seek backward {number of seconds to skip}
 * quit -> quit omxplayer-console
@@ -70,6 +71,7 @@ Default keybindings are as follows:
 * F -> forward 100 seconds (seek+100)
 * r -> rewind 20 seconds (seek-20)
 * R -> rewind 100 seconds (seek-100)
+* p -> pause/resume (pause)
 
 web radio mode
 --------------

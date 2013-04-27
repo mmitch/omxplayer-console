@@ -521,6 +521,10 @@ while (1) {
 	}
 	
     }
+    elsif ($cmd eq 'pause') {
+	mplayer_send('pause');
+	omxplayer_send('p');
+    }
     elsif ($cmd eq 'play') {
 	if ($sel >= 0) {
 	    my $file = $filelist[$sel];
