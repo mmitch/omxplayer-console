@@ -512,6 +512,19 @@ while (1) {
 	mplayer_send('sub_select');
 	omxplayer_send('m');
     }
+    elsif ($cmd eq 'subdelay') {
+	$arg = 0 unless $arg;
+
+	mplayer_send("sub_delay " . ($arg / 1000));
+
+	# omxplayer can only change delay by 250ms
+	if ($arg < 0) {
+	    omxplayer_send('d');
+	} elsif ($arg > 0) {
+	    omxplayer_send('f');
+	}
+
+    }
     elsif ($cmd eq 'volume') {
 	$arg = 0 unless $arg;
 

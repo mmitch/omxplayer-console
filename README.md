@@ -34,6 +34,7 @@ meaning is given in {curly braces}.  These commands are supported:
 * left -> enter parent folder
 * play -> play selected file
 * stop -> stop playback
+* quit -> quit omxplayer-console
 * pause -> pause/resume
 * seek+ -> seek forward {number of seconds to skip}
 * seek- -> seek backward {number of seconds to skip}
@@ -41,7 +42,8 @@ meaning is given in {curly braces}.  These commands are supported:
 * volume- -> lower volume {value}
 * audio -> switch audio stream
 * subtitle -> switch subtitles
-* quit -> quit omxplayer-console
+* subdelay+ -> raise subtitle delay {number of milliseconds}
+* subdelay- -> lower subtitle delay {number of milliseconds}
 
 note: omxplayer can only seek +/-30 and +/-600 seconds :-/
 
@@ -71,15 +73,17 @@ Default keybindings are as follows:
 * enter -> play selected file (play)
 * space -> stop playback (stop)
 * q -> quit (quit)
+* p -> pause/resume (pause)
 * f -> forward 20 seconds (seek+20)
 * F -> forward 100 seconds (seek+100)
 * r -> rewind 20 seconds (seek-20)
 * R -> rewind 100 seconds (seek-100)
-* p -> pause/resume (pause)
 * + -> raise volume (volume+10)
 * - -> lower volume (volume-10)
 * a -> switch audio stream (audio)
 * s -> switch subtitles (subtitle)
+* d -> raise subtitle delay (subdelay+250)
+* D -> lower subtitle delay (subdelay-250)
 
 web radio mode
 --------------

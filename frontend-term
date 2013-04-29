@@ -28,6 +28,8 @@ my %keys = (
     '-' => 'volume -10',
     'a' => 'audio',
     's' => 'subtitle',
+    'd' => 'subdelay+250',
+    'D' => 'subdelay-250',
     );
 
 #################################
