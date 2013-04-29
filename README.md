@@ -37,6 +37,8 @@ meaning is given in {curly braces}.  These commands are supported:
 * pause -> pause/resume
 * seek+ -> seek forward {number of seconds to skip}
 * seek- -> seek backward {number of seconds to skip}
+* volume+ -> raise volume {value}
+* volume- -> lower volume {value}
 * quit -> quit omxplayer-console
 
 note: omxplayer can only seek +/-30 and +/-600 seconds :-/
@@ -72,6 +74,8 @@ Default keybindings are as follows:
 * r -> rewind 20 seconds (seek-20)
 * R -> rewind 100 seconds (seek-100)
 * p -> pause/resume (pause)
+* + -> raise volume (volume+10)
+* - -> lower volume (volume-10)
 
 web radio mode
 --------------

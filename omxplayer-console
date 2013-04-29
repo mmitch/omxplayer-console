@@ -504,6 +504,19 @@ while (1) {
 	    }
 	}
     }
+    elsif ($cmd eq 'volume') {
+	$arg = 0 unless $arg;
+
+	mplayer_send("volume $arg");
+
+	# omxplayer tages no argument
+	if ($arg < 0) {
+	    omxplayer_send('-');
+	} elsif ($arg > 0) {
+	    omxplayer_send('+');
+	}
+	
+    }
     elsif ($cmd eq 'seek') {
 	$arg = 0 unless $arg;
 
