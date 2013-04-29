@@ -44,6 +44,7 @@ meaning is given in {curly braces}.  These commands are supported:
 * subtitle -> switch subtitles
 * subdelay+ -> raise subtitle delay {number of milliseconds}
 * subdelay- -> lower subtitle delay {number of milliseconds}
+* info -> show various information
 
 note: omxplayer can only seek +/-30 and +/-600 seconds :-/
 
@@ -84,6 +85,7 @@ Default keybindings are as follows:
 * s -> switch subtitles (subtitle)
 * d -> raise subtitle delay (subdelay+250)
 * D -> lower subtitle delay (subdelay-250)
+* i -> show various informations (info)
 
 web radio mode
 --------------
