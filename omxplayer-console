@@ -504,6 +504,10 @@ while (1) {
 	    }
 	}
     }
+    elsif ($cmd eq 'audio') {
+	mplayer_send('switch_audio');
+	omxplayer_send('k');
+    }
     elsif ($cmd eq 'volume') {
 	$arg = 0 unless $arg;
 
