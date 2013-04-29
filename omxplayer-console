@@ -508,6 +508,10 @@ while (1) {
 	mplayer_send('switch_audio');
 	omxplayer_send('k');
     }
+    elsif ($cmd eq 'subtitle') {
+	mplayer_send('sub_select');
+	omxplayer_send('m');
+    }
     elsif ($cmd eq 'volume') {
 	$arg = 0 unless $arg;
 

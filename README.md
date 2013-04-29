@@ -40,6 +40,7 @@ meaning is given in {curly braces}.  These commands are supported:
 * volume+ -> raise volume {value}
 * volume- -> lower volume {value}
 * audio -> switch audio stream
+* subtitle -> switch subtitles
 * quit -> quit omxplayer-console
 
 note: omxplayer can only seek +/-30 and +/-600 seconds :-/
@@ -78,6 +79,7 @@ Default keybindings are as follows:
 * + -> raise volume (volume+10)
 * - -> lower volume (volume-10)
 * a -> switch audio stream (audio)
+* s -> switch subtitles (subtitle)
 
 web radio mode
 --------------
