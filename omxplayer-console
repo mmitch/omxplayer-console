@@ -92,8 +92,6 @@ sub clear_screen()
 
 sub mplayer_stop()
 {
-    return unless $mplayer_pid;
-
     mplayer_send('stop');
     kill 15, $mplayer_pid;
     waitpid( $mplayer_pid, 0 );
@@ -102,7 +100,6 @@ sub mplayer_stop()
 
 sub omxplayer_stop()
 {
-    return unless $omxplayer_active;
     omxplayer_send('q');
     `${omxplayer_kill}`;
     $omxplayer_active = 0;
