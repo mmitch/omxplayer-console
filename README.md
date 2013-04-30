@@ -42,6 +42,7 @@ meaning is given in {curly braces}.  These commands are supported:
 * volume- -> lower volume {value}
 * audio -> switch audio stream
 * subtitle -> switch subtitles
+* nosub -> remove subtitles
 * subdelay+ -> raise subtitle delay {number of milliseconds}
 * subdelay- -> lower subtitle delay {number of milliseconds}
 * info -> show various information
@@ -83,6 +84,7 @@ Default keybindings are as follows:
 * - -> lower volume (volume-10)
 * a -> switch audio stream (audio)
 * s -> switch subtitles (subtitle)
+* S -> remove subtitles (nosub)
 * d -> raise subtitle delay (subdelay+250)
 * D -> lower subtitle delay (subdelay-250)
 * i -> show various informations (info)

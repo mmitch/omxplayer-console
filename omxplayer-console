@@ -505,6 +505,8 @@ while (1) {
     }
     elsif ($cmd eq 'info') {
 	mplayer_send('osd_show_progression');
+
+	# omxplayer not working?
 	omxplayer_send('z');
     }
     elsif ($cmd eq 'audio') {
@@ -514,6 +516,12 @@ while (1) {
     elsif ($cmd eq 'subtitle') {
 	mplayer_send('sub_select');
 	omxplayer_send('m');
+    }
+    elsif ($cmd eq 'nosub') {
+	mplayer_send('sub_select -1');
+
+	# omxplayer can only toggle subtitles on/off
+	omxplayer_send('s');
     }
     elsif ($cmd eq 'subdelay') {
 	$arg = 0 unless $arg;
@@ -546,7 +554,7 @@ while (1) {
 
 	mplayer_send("seek $arg 0");
 
-	# omxplayer can only seek +-30 and +.600 seconds O_o;;;
+	# omxplayer can only seek +-30 and +-600 seconds O_o;;;
 	if ($arg < -99) {
 	    omxplayer_send("\x1b\x5b\x42");
 	} elsif ($arg > 99) {
