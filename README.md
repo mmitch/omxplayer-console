@@ -4,7 +4,7 @@ omxplayer-console
 copyright
 ---------
 
-omxplayer-console - console frontend for omxplayer (and others)
+omxplayer-console - console frontend for omxplayer (and others)  
 Copyright (C) 2013  Christian Garbs <mitch@cgarbs.de>
 
 This program is free software: you can redistribute it and/or modify
