@@ -79,7 +79,7 @@ Currently, frontend-term uses no arguments.
 frontend-term keybindings
 -------------------------
 
-frontend-term is a convenient frontend to omxplayer-curses that
+frontend-term is a convenient frontend to omxplayer-console that
 relieves you of typing all the commands.  Run it like this:
 
 ```bash
