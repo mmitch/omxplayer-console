@@ -20,8 +20,8 @@ e.g. cursor key movement.
 
 I use these scripts to remotely control my Raspberry Pi as a video
 player using an USB IR remote.  See my blog posts for further details
-(German only):
-https://www.cgarbs.de/blog/archives/1072-How-to-RasPi-Videos-mit-omxplayer.html
+(German only):  
+https://www.cgarbs.de/blog/archives/1072-How-to-RasPi-Videos-mit-omxplayer.html  
 https://www.cgarbs.de/blog/archives/1075-How-to-RasPi-bequem-fernsteuern.html
 
 copyright
