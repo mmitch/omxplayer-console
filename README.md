@@ -1,6 +1,29 @@
 omxplayer-console
 =================
 
+about
+-----
+
+omxplayer-console frontend is a console frontend for the omxplayer
+media player.  Some formats that omxplayer can't play will fall
+back to playback via mplayer.  Other formats and players can be
+configured, too.
+
+omxplayer-console features a text mode file browser for media
+selection.  Simple commands like "play" or "pause" will act on
+the selected file. omxplayer-console then translates and relays
+these commands to the appropriate player (omxplayer/mplayer).
+
+The second script frontend-term relieves you of typing commands
+like "up", "up", "play" and allows direct interaction via keyboard,
+e.g. cursor key movement.
+
+I use these scripts to remotely control my Raspberry Pi as a video
+player using an USB IR remote.  See my blog posts for further details
+(German only):
+https://www.cgarbs.de/blog/archives/1072-How-to-RasPi-Videos-mit-omxplayer.html
+https://www.cgarbs.de/blog/archives/1075-How-to-RasPi-bequem-fernsteuern.html
+
 copyright
 ---------
 
@@ -110,7 +133,7 @@ web radio mode
 --------------
 
 Files ending with .webradio must contain one line with the stream to
-play.  The format the line is the same as a station definition from
+play.  The format of a line is the same as a station definition from
 [jamirdochegal](https://github.com/mmitch/jamirdochegal/):
 
     [<shortcut>|]<name> [<flag>]<url>
