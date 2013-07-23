@@ -35,6 +35,29 @@
 <a name="omxplayer-console" class="anchor" href="#omxplayer-console"><span class="octicon octicon-link"></span></a>omxplayer-console</h1>
 
 <h2>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>about</h2>
+
+<p>omxplayer-console frontend is a console frontend for the omxplayer
+media player.  Some formats that omxplayer can't play will fall
+back to playback via mplayer.  Other formats and players can be
+configured, too.</p>
+
+<p>omxplayer-console features a text mode file browser for media
+selection.  Simple commands like "play" or "pause" will act on
+the selected file. omxplayer-console then translates and relays
+these commands to the appropriate player (omxplayer/mplayer).</p>
+
+<p>The second script frontend-term relieves you of typing commands
+like "up", "up", "play" and allows direct interaction via keyboard,
+e.g. cursor key movement.</p>
+
+<p>I use these scripts to remotely control my Raspberry Pi as a video
+player using an USB IR remote.  See my blog posts for further details
+(German only):
+<a href="https://www.cgarbs.de/blog/archives/1072-How-to-RasPi-Videos-mit-omxplayer.html">https://www.cgarbs.de/blog/archives/1072-How-to-RasPi-Videos-mit-omxplayer.html</a>
+<a href="https://www.cgarbs.de/blog/archives/1075-How-to-RasPi-bequem-fernsteuern.html">https://www.cgarbs.de/blog/archives/1075-How-to-RasPi-bequem-fernsteuern.html</a></p>
+
+<h2>
 <a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>copyright</h2>
 
 <p>omxplayer-console - console frontend for omxplayer (and others)<br>
@@ -139,7 +162,7 @@ relieves you of typing all the commands.  Run it like this:</p>
 <a name="web-radio-mode" class="anchor" href="#web-radio-mode"><span class="octicon octicon-link"></span></a>web radio mode</h2>
 
 <p>Files ending with .webradio must contain one line with the stream to
-play.  The format the line is the same as a station definition from
+play.  The format of a line is the same as a station definition from
 <a href="https://github.com/mmitch/jamirdochegal/">jamirdochegal</a>:</p>
 
 <pre><code>[&lt;shortcut&gt;|]&lt;name&gt; [&lt;flag&gt;]&lt;url&gt;
