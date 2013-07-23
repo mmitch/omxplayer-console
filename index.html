@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Omxplayer-console : console frontend for omxplayer (and others)" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Omxplayer-console</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mmitch/omxplayer-console">View on GitHub</a>
+
+          <h1 id="project_title">Omxplayer-console</h1>
+          <h2 id="project_tagline">console frontend for omxplayer (and others)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mmitch/omxplayer-console/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mmitch/omxplayer-console/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="omxplayer-console" class="anchor" href="#omxplayer-console"><span class="octicon octicon-link"></span></a>omxplayer-console</h1>
+
+<h2>
+<a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>copyright</h2>
+
+<p>omxplayer-console - console frontend for omxplayer (and others)<br>
+Copyright (C) 2013  Christian Garbs <a href="mailto:mitch@cgarbs.de">mitch@cgarbs.de</a></p>
+
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+
+<h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>dependencies</h2>
+
+<ul>
+<li>Perl</li>
+<li>File::Which</li>
+<li>figlet</li>
+<li>omxplayer (optional)</li>
+<li>mplayer (optional)</li>
+<li>ip (optional)</li>
+</ul><h2>
+<a name="omxplayer-console-usage" class="anchor" href="#omxplayer-console-usage"><span class="octicon octicon-link"></span></a>omxplayer-console usage</h2>
+
+<pre><code>omxplayer-console [&lt;start_directory&gt;]
+</code></pre>
+
+<p>If <code>&lt;start_directory&gt;</code> is not given, <code>$HOME/media</code> is used as the initial directory.</p>
+
+<h2>
+<a name="omxplayer-console-commands" class="anchor" href="#omxplayer-console-commands"><span class="octicon octicon-link"></span></a>omxplayer-console commands</h2>
+
+<p>omxplayer-console is controlled via commands on stdin - one command
+per line.  Some commands take optional numeric parameters, their
+meaning is given in {curly braces}.  These commands are supported:</p>
+
+<ul>
+<li>up/down -&gt; navigate in file selector {move multiple lines}</li>
+<li>right -&gt; enter selected folder</li>
+<li>left -&gt; enter parent folder</li>
+<li>play -&gt; play selected file</li>
+<li>stop -&gt; stop playback</li>
+<li>quit -&gt; quit omxplayer-console</li>
+<li>pause -&gt; pause/resume</li>
+<li>seek+ -&gt; seek forward {number of seconds to skip}</li>
+<li>seek- -&gt; seek backward {number of seconds to skip}</li>
+<li>volume+ -&gt; raise volume {value}</li>
+<li>volume- -&gt; lower volume {value}</li>
+<li>audio -&gt; switch audio stream</li>
+<li>subtitle -&gt; switch subtitles</li>
+<li>nosub -&gt; remove subtitles</li>
+<li>subdelay+ -&gt; raise subtitle delay {number of milliseconds}</li>
+<li>subdelay- -&gt; lower subtitle delay {number of milliseconds}</li>
+<li>info -&gt; show various information</li>
+</ul><p>note: omxplayer can only seek +/-30 and +/-600 seconds :-/</p>
+
+<h2>
+<a name="frontend-term-usage" class="anchor" href="#frontend-term-usage"><span class="octicon octicon-link"></span></a>frontend-term usage</h2>
+
+<pre><code>frontend-term
+</code></pre>
+
+<p>Currently, frontend-term uses no arguments.</p>
+
+<h2>
+<a name="frontend-term-keybindings" class="anchor" href="#frontend-term-keybindings"><span class="octicon octicon-link"></span></a>frontend-term keybindings</h2>
+
+<p>frontend-term is a convenient frontend to omxplayer-console that
+relieves you of typing all the commands.  Run it like this:</p>
+
+<div class="highlight"><pre>./frontend-term | ./omxplayer-console
+</pre></div>
+
+<p>Default keybindings are as follows:</p>
+
+<ul>
+<li>cursor keys -&gt; file selector navigation (up/down/left/right)</li>
+<li>enter -&gt; play selected file (play)</li>
+<li>space -&gt; stop playback (stop)</li>
+<li>q -&gt; quit (quit)</li>
+<li>p -&gt; pause/resume (pause)</li>
+<li>f -&gt; forward 20 seconds (seek+20)</li>
+<li>F -&gt; forward 100 seconds (seek+100)</li>
+<li>r -&gt; rewind 20 seconds (seek-20)</li>
+<li>R -&gt; rewind 100 seconds (seek-100)</li>
+<li>+ -&gt; raise volume (volume+10)</li>
+<li>- -&gt; lower volume (volume-10)</li>
+<li>a -&gt; switch audio stream (audio)</li>
+<li>s -&gt; switch subtitles (subtitle)</li>
+<li>S -&gt; remove subtitles (nosub)</li>
+<li>d -&gt; raise subtitle delay (subdelay+250)</li>
+<li>D -&gt; lower subtitle delay (subdelay-250)</li>
+<li>i -&gt; show various informations (info)</li>
+</ul><h2>
+<a name="web-radio-mode" class="anchor" href="#web-radio-mode"><span class="octicon octicon-link"></span></a>web radio mode</h2>
+
+<p>Files ending with .webradio must contain one line with the stream to
+play.  The format the line is the same as a station definition from
+<a href="https://github.com/mmitch/jamirdochegal/">jamirdochegal</a>:</p>
+
+<pre><code>[&lt;shortcut&gt;|]&lt;name&gt; [&lt;flag&gt;]&lt;url&gt;
+</code></pre>
+
+<ul>
+<li>
+<code>&lt;shortcut&gt;</code> and <code>&lt;name&gt;</code> are ignored by omxplayer-console</li>
+<li>
+<code>&lt;url&gt;</code> is the playlist/stream url</li>
+<li>
+<code>&lt;flag&gt;</code> is optional an can be one or more of
+<code>DIRECT</code>: when <code>&lt;url&gt;</code> is no playlist but a direct stream
+and
+<code>OGGDEMUX</code>: work around mplayer/lavf-demuxer problems with OGG streams</li>
+</ul><p>So a minimal stream file would look like this (the name being ignored):</p>
+
+<pre><code>MyWebRadio http://www.example.com/stream.pls
+</code></pre>
+
+<p>To convert the jamirdochegal station list at the end of the script
+into single .webradio files, use this:</p>
+
+<div class="highlight"><pre><span class="k">while </span><span class="nb">read </span>LINE;
+    <span class="k">do </span><span class="nb">echo</span> <span class="s2">"$LINE"</span> &gt; <span class="s2">"$(echo "</span><span class="nv">$LINE</span><span class="s2">" | cut -d ' ' -f 1 | cut -d '|' -f 1).webradio"</span>
+<span class="k">done</span>
+</pre></div>
+
+<h2>
+<a name="to-be-done" class="anchor" href="#to-be-done"><span class="octicon octicon-link"></span></a>to be done</h2>
+
+<ul>
+<li>add copyright notice display command</li>
+<li>add help text to commandline</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Omxplayer-console maintained by <a href="https://github.com/mmitch">mmitch</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
