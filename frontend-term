@@ -63,7 +63,7 @@ $|++;
 
 while (1) {
 
-    my $key = ReadKey(-1);
+    my $key = ReadKey(0.15); # read timeout 150ms
     next unless defined $key;
 	
     # build ESC sequences
