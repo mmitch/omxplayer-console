@@ -150,13 +150,16 @@ So a minimal stream file would look like this (the name being ignored):
     MyWebRadio http://www.example.com/stream.pls
 
 To convert the jamirdochegal station list at the end of the script
-into single .webradio files, use this:
+into single .webradio files, you basically have to do this:
 
 ```bash
 while read LINE; do
     echo "$LINE" > "$(echo "$LINE" | cut -d ' ' -f 1 | cut -d '|' -f 1).webradio"
 done
 ```
+
+Or use the update-webradios.pl script.  (You'll have to change the
+paths at the top to your needs.)
 
 to be done
 ----------
