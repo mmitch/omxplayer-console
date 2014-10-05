@@ -153,8 +153,8 @@ To convert the jamirdochegal station list at the end of the script
 into single .webradio files, use this:
 
 ```bash
-while read LINE;
-    do echo "$LINE" > "$(echo "$LINE" | cut -d ' ' -f 1 | cut -d '|' -f 1).webradio"
+while read LINE; do
+    echo "$LINE" > "$(echo "$LINE" | cut -d ' ' -f 1 | cut -d '|' -f 1).webradio"
 done
 ```
 
@@ -163,3 +163,4 @@ to be done
 
 * add copyright notice display command
 * add help text to commandline
+* figure out why the FIFO writes have (had?) to be forked off
