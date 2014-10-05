@@ -199,7 +199,9 @@ sub omxplayer_start(@)
     } 
 
     $omxplayer_active = 1;
-    omxplayer_send('.');
+
+    # omxplayer needs a bogus command to start playing?!
+    omxplayer_send('z');
 
 }
 
