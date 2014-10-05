@@ -48,9 +48,8 @@ dependencies
 
 - Perl
 - File::Which
-- figlet
-- omxplayer (optional)
-- mplayer (optional)
+- at least one of omxplayer and mplayer
+- figlet or toilet (both optional)
 - ip (optional)
 
 omxplayer-console usage

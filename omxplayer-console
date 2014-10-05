@@ -65,6 +65,46 @@ my $ip_cache_time = 0;
 my $screen_w = 0 + `tput cols`;
 my $screen_h = 0 + `tput lines`;
 
+# decide on console font pretty printer
+my $fonter = undef;
+if ($screen_h > 10)
+{
+    # decide on binary
+    if (defined which('toilet'))
+    {
+	$fonter="toilet -w $screen_w";
+    }
+    elsif (defined which('figlet'))
+    {
+	$fonter="figlet -w $screen_w";
+    }
+
+    if (defined $fonter)
+    {
+	# decide on font
+	if (defined `$fonter -f pagga foo` and $? == 0)
+	{
+	    $fonter .= ' -f pagga -k';
+	}
+	elsif ($screen_h > 40 and defined `$fonter -f small foo` and $? == 0)
+	{
+	    $fonter .= "$fonter -f small -k";
+	}
+	elsif (defined `$fonter -f mini foo` and  $? == 0)
+	{
+	    $fonter .= "$fonter -f mini -k";
+	}
+	else
+	{
+	    # toilet/figlet installed, but not even default fonts?
+	    # CURSES, FOILED AGAIN!
+	    $fonter = undef;
+	}
+    }
+}
+# fallback: no pretty print at all
+$fonter = 'cat' unless defined $fonter;
+
 # handle forks in *player_send()
 use POSIX ":sys_wait_h";
 sub REAPER {
@@ -276,10 +316,7 @@ sub print_big($)
     my $pid = open2(
 	$stdout,
 	$stdin,
-        "figlet -w $screen_w -f mini -k"
-#	'figlet -t -f mini -k'
-#	'figlet -t -f small -W'
-#	'figlet -t -f small'
+	$fonter
 	);
 
     my $ret;
