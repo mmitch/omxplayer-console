@@ -37,7 +37,7 @@ my $omxplayer_kill = 'killall -e omxplayer.bin';
 my $mplayer_regexp        = qr/\.(264|avi|bin|divx|f4v|h264|m4e|m4v|m4a|mkv|mov|mp4|mp4v|mpe|mpeg|mpeg4|mpg|mpg2|mpv|mpv2|mqv|mvp|ogm|ogv|qt|qtm|rm|rts|scm|scn|smk|swf|vob|wmv|xvid|x264|mp3|flac|ogg|wav|flv|mkv)$/;
 my $mplayer_regexp_stream = qr/\.(webradio)$/;
 my $mplayer_fifo = '/tmp/omxplayer-console.mplayer.fifo';
-my @mplayer_exec = ('mplayer', '-slave', '-quiet', '-input', "file=${mplayer_fifo}", '%FILES%');
+my @mplayer_exec = ('mplayer', '-slave', '-really-quiet', '-input', "nodefault-bindings:conf=/dev/null:file=${mplayer_fifo}", '%FILES%');
 # see mplayer slave mode documentation at
 # http://www.mplayerhq.hu/DOCS/tech/slave.txt
 
@@ -258,9 +258,11 @@ sub mplayer_start(@)
     if ($mplayer_pid == 0) {
 	# child
 
-	close STDIN;
-#	close STDOUT; # mplayer plays no streams when stdout is closed?!
+	# mplayer plays no streams when stdin/stdout are closed?!
+	close STDOUT;
 	open(STDOUT, '>', '/dev/null') or die "can't reopen stdout to `/dev/null': $!";
+	close STDIN;
+	open(STDIN, '<', '/dev/null') or die "can't reopen stdin to `/dev/null': $!";
 	close STDERR;
 
 	my @exec = ();
