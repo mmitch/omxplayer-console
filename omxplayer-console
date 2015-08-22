@@ -526,14 +526,14 @@ while (1) {
 	$arg = 1 unless $arg;
 	$sel -= $arg;
 	if ($sel < 0) {
-	    $sel = 0;
+	    $sel = @filelist - 1;
 	}
     }
     elsif ($cmd eq 'down') {
 	$arg = 1 unless $arg;
 	$sel += $arg;
 	if ($sel >= @filelist) {
-	    $sel = @filelist - 1;
+	    $sel = 0;
 	}
     }
     elsif ($cmd eq 'quit') {
