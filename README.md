@@ -9,6 +9,8 @@ media player.  Some formats that omxplayer can't play will fall
 back to playback via mplayer.  Other formats and players can be
 configured, too.
 
+The project homepage is at https://github.com/mmitch/omxplayer-console
+
 omxplayer-console features a text mode file browser for media
 selection.  Simple commands like "play" or "pause" will act on
 the selected file. omxplayer-console then translates and relays
