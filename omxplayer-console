@@ -145,6 +145,7 @@ sub get_ip_cached()
 sub clear_screen()
 {
     print $cls;
+    `setterm --blank poke`; # unblank screen if console screen saver got active
     $ypos = 1; # don't use last line on screen
 }
 
